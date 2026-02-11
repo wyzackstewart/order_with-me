@@ -1,5 +1,5 @@
 <?php
-// index.php - Homepage
+// index.php - Homepage with COMPLETE IMAGE FIX
 require_once 'config/session.php';
 require_once 'config/database.php';
 require_once 'models/Product.php';
@@ -21,37 +21,29 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
     $selected_category = isset($_GET['category']) ? $_GET['category'] : '';
     $search_results = $product->search($search_keywords, $selected_category);
 }
+
+// Array of fallback images (working Unsplash URLs)
+$fallback_images = [
+    'phone' => 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    'laptop' => 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    'tablet' => 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    'accessory' => 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    'default' => 'https://images.unsplash.com/photo-1472851294608-062f824d29cc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+];
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order With Me - Premium Electronics Store</title>
+    <title>Order With Me - Premium Electronics Store, Tanzania</title>
     
     <!-- CSS Files -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
-    
     <style>
-        /* Main Styles */
-        :root {
-            --primary: #3498db;
-            --primary-dark: #2980b9;
-            --secondary: #2c3e50;
-            --accent: #e74c3c;
-            --success: #2ecc71;
-            --warning: #f39c12;
-            --danger: #e74c3c;
-            --light: #ecf0f1;
-            --dark: #2c3e50;
-            --gray: #95a5a6;
-            --border: #ddd;
-        }
-        
+        /* Reset and Base Styles */
         * {
             margin: 0;
             padding: 0;
@@ -65,21 +57,21 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
             background-color: #f8f9fa;
         }
         
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
         /* Header Styles */
         .main-header {
-            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            background: linear-gradient(135deg, #2c3e50, #3498db);
             color: white;
             padding: 1rem 0;
             position: sticky;
             top: 0;
             z-index: 1000;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
         }
         
         .navbar {
@@ -100,22 +92,15 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
         }
         
         .logo i {
-            color: var(--accent);
+            color: #e74c3c;
         }
         
-        .logo-text {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.2;
-        }
-        
-        .logo-main {
-            font-size: 1.5rem;
-        }
-        
-        .logo-sub {
+        .logo span {
+            background: rgba(255,255,255,0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
             font-size: 0.8rem;
-            opacity: 0.8;
+            margin-left: 5px;
         }
         
         .nav-menu {
@@ -152,7 +137,7 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
             position: absolute;
             top: -5px;
             right: -5px;
-            background: var(--accent);
+            background: #e74c3c;
             color: white;
             border-radius: 50%;
             width: 20px;
@@ -162,43 +147,7 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
             justify-content: center;
             font-size: 0.8rem;
             font-weight: bold;
-        }
-        
-        .user-menu {
-            position: relative;
-        }
-        
-        .user-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-            min-width: 200px;
             display: none;
-            z-index: 1000;
-        }
-        
-        .user-dropdown.show {
-            display: block;
-            animation: fadeIn 0.3s;
-        }
-        
-        .user-dropdown a {
-            color: #333;
-            padding: 0.8rem 1rem;
-            display: block;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .user-dropdown a:hover {
-            background: #f8f9fa;
-            color: var(--primary);
-        }
-        
-        .user-dropdown a:last-child {
-            border-bottom: none;
         }
         
         .mobile-menu-btn {
@@ -210,45 +159,10 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
             cursor: pointer;
         }
         
-        /* Hero Section */
-        .hero-section {
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1498049794561-7780e7231661?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            text-align: center;
-            padding: 6rem 1rem;
-            margin-bottom: 3rem;
-        }
-        
-        .hero-content {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .hero-title {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            font-weight: 700;
-        }
-        
-        .hero-subtitle {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-        }
-        
-        .hero-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
         /* Buttons */
         .btn {
             display: inline-block;
-            padding: 0.8rem 1.8rem;
+            padding: 0.8rem 1.5rem;
             border: none;
             border-radius: 4px;
             cursor: pointer;
@@ -257,8 +171,6 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
             text-align: center;
             transition: all 0.3s;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
         
         .btn i {
@@ -266,40 +178,26 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
         }
         
         .btn-primary {
-            background: var(--primary);
+            background: #3498db;
             color: white;
         }
         
         .btn-primary:hover {
-            background: var(--primary-dark);
+            background: #2980b9;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
         }
         
         .btn-secondary {
-            background: transparent;
-            border: 2px solid white;
+            background: #2c3e50;
             color: white;
         }
         
         .btn-secondary:hover {
-            background: white;
-            color: var(--secondary);
-            transform: translateY(-2px);
-        }
-        
-        .btn-accent {
-            background: var(--accent);
-            color: white;
-        }
-        
-        .btn-accent:hover {
-            background: #c0392b;
-            transform: translateY(-2px);
+            background: #1a252f;
         }
         
         .btn-success {
-            background: var(--success);
+            background: #2ecc71;
             color: white;
         }
         
@@ -308,28 +206,56 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
         }
         
         .btn-large {
-            padding: 1rem 2.5rem;
+            padding: 1rem 2rem;
             font-size: 1.1rem;
         }
         
-        /* Features Section */
-        .features-section {
-            padding: 4rem 0;
-            background: var(--light);
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('<?php echo $fallback_images['default']; ?>');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 5rem 1rem;
+            margin-bottom: 3rem;
         }
         
-        .features-grid {
+        .hero-section h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero-section p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .hero-section .tz-badge {
+            display: inline-block;
+            background: #e74c3c;
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+        
+        /* Features */
+        .features {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 2rem;
-            margin-top: 2rem;
+            padding: 3rem 0;
         }
         
         .feature-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
             text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             transition: transform 0.3s;
         }
@@ -340,22 +266,17 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
         
         .feature-icon {
             font-size: 3rem;
-            color: var(--primary);
+            color: #3498db;
             margin-bottom: 1rem;
-        }
-        
-        .feature-card h3 {
-            margin-bottom: 1rem;
-            color: var(--dark);
         }
         
         /* Search Section */
         .search-section {
-            padding: 2rem 0;
             background: white;
-            margin: 2rem 0;
+            padding: 2rem;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: 2rem 0;
         }
         
         .search-form {
@@ -369,71 +290,47 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
         .search-box {
             flex: 1;
             min-width: 300px;
-            position: relative;
         }
         
         .search-input {
             width: 100%;
-            padding: 0.8rem 1rem;
-            border: 2px solid var(--border);
+            padding: 0.8rem;
+            border: 2px solid #ddd;
             border-radius: 4px;
             font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-        
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary);
         }
         
         .filter-select {
-            padding: 0.8rem 1rem;
-            border: 2px solid var(--border);
+            padding: 0.8rem;
+            border: 2px solid #ddd;
             border-radius: 4px;
-            background: white;
             font-size: 1rem;
             min-width: 150px;
         }
         
-        /* Products Section */
-        .products-section {
-            padding: 4rem 0;
-        }
-        
+        /* Section Titles */
         .section-title {
             text-align: center;
-            margin-bottom: 3rem;
+            margin: 3rem 0;
         }
         
         .section-title h2 {
+            color: #2c3e50;
             font-size: 2.5rem;
-            color: var(--dark);
             margin-bottom: 1rem;
-            position: relative;
-            display: inline-block;
-        }
-        
-        .section-title h2::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 3px;
-            background: var(--accent);
         }
         
         .section-title p {
-            color: var(--gray);
+            color: #7f8c8d;
             font-size: 1.1rem;
         }
         
+        /* Products Grid */
         .products-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 2rem;
-            margin-top: 2rem;
+            margin: 2rem 0;
         }
         
         .product-card {
@@ -446,15 +343,15 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
         }
         
         .product-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         }
         
         .product-badge {
             position: absolute;
             top: 15px;
             left: 15px;
-            background: var(--accent);
+            background: #e74c3c;
             color: white;
             padding: 0.3rem 0.8rem;
             border-radius: 20px;
@@ -484,7 +381,7 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
         }
         
         .product-category {
-            color: var(--primary);
+            color: #3498db;
             font-size: 0.9rem;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -494,7 +391,7 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
         .product-title {
             font-size: 1.2rem;
             margin-bottom: 0.5rem;
-            color: var(--dark);
+            color: #2c3e50;
         }
         
         .product-title a {
@@ -503,11 +400,11 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
         }
         
         .product-title a:hover {
-            color: var(--primary);
+            color: #3498db;
         }
         
         .product-description {
-            color: var(--gray);
+            color: #7f8c8d;
             font-size: 0.9rem;
             line-height: 1.5;
             margin-bottom: 1rem;
@@ -517,7 +414,7 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
         
         .product-price {
             font-size: 1.5rem;
-            color: var(--accent);
+            color: #e74c3c;
             font-weight: 700;
             margin-bottom: 1rem;
         }
@@ -525,17 +422,14 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
         .product-stock {
             font-size: 0.9rem;
             margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 5px;
         }
         
         .in-stock {
-            color: var(--success);
+            color: #2ecc71;
         }
         
         .out-of-stock {
-            color: var(--danger);
+            color: #e74c3c;
         }
         
         .product-actions {
@@ -549,17 +443,12 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
             font-size: 0.9rem;
         }
         
-        /* Categories Section */
-        .categories-section {
-            padding: 4rem 0;
-            background: var(--light);
-        }
-        
+        /* Categories Grid */
         .categories-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 2rem;
-            margin-top: 2rem;
+            margin: 2rem 0;
         }
         
         .category-card {
@@ -570,39 +459,28 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
             text-decoration: none;
             color: inherit;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: all 0.3s;
+            transition: transform 0.3s;
         }
         
         .category-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
         }
         
         .category-icon {
             font-size: 3rem;
-            color: var(--primary);
+            color: #3498db;
             margin-bottom: 1rem;
-        }
-        
-        .category-card h3 {
-            margin-bottom: 0.5rem;
-            color: var(--dark);
-        }
-        
-        .category-card p {
-            color: var(--gray);
-            font-size: 0.9rem;
         }
         
         /* CTA Section */
         .cta-section {
             background: linear-gradient(rgba(44, 62, 80, 0.95), rgba(44, 62, 80, 0.95)), 
-                        url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
+                        url('<?php echo $fallback_images['default']; ?>');
             background-size: cover;
             background-position: center;
             color: white;
             text-align: center;
-            padding: 5rem 1rem;
+            padding: 4rem 1rem;
             margin: 4rem 0;
             border-radius: 10px;
         }
@@ -617,17 +495,12 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
             margin-bottom: 1rem;
         }
         
-        .cta-content p {
-            font-size: 1.1rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-        }
-        
-        /* Footer */
+        /* Footer - Updated with Tanzania info */
         .main-footer {
-            background: var(--secondary);
+            background: #2c3e50;
             color: white;
             padding: 4rem 0 2rem;
+            margin-top: 4rem;
         }
         
         .footer-content {
@@ -638,7 +511,7 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
         }
         
         .footer-section h3 {
-            color: var(--primary);
+            color: #3498db;
             margin-bottom: 1.5rem;
             font-size: 1.2rem;
         }
@@ -658,43 +531,17 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
         }
         
         .footer-section ul li a:hover {
-            color: var(--primary);
+            color: #3498db;
         }
         
-        .contact-info li {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-        
-        .contact-info i {
-            color: var(--primary);
-            margin-top: 3px;
-        }
-        
-        .social-links {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-        
-        .social-links a {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            background: rgba(255,255,255,0.1);
+        .tz-flag {
+            display: inline-block;
+            background: #e74c3c;
             color: white;
-            border-radius: 50%;
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-        
-        .social-links a:hover {
-            background: var(--primary);
-            transform: translateY(-3px);
+            padding: 0.2rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
         }
         
         .footer-bottom {
@@ -705,11 +552,11 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
             font-size: 0.9rem;
         }
         
-        /* No Products Message */
+        /* No Products */
         .no-products {
             text-align: center;
             padding: 4rem 1rem;
-            color: var(--gray);
+            color: #7f8c8d;
         }
         
         .no-products i {
@@ -718,9 +565,9 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
             margin-bottom: 1rem;
         }
         
-        /* Responsive Design */
-        @media (max-width: 992px) {
-            .hero-title {
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-section h1 {
                 font-size: 2.5rem;
             }
             
@@ -731,7 +578,7 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
                 top: 100%;
                 left: 0;
                 right: 0;
-                background: var(--secondary);
+                background: #2c3e50;
                 padding: 1rem;
                 box-shadow: 0 5px 10px rgba(0,0,0,0.1);
             }
@@ -743,35 +590,35 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
             .mobile-menu-btn {
                 display: block;
             }
-        }
-        
-        @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2rem;
-            }
-            
-            .section-title h2 {
-                font-size: 2rem;
-            }
-            
-            .hero-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .btn-large {
-                width: 100%;
-                max-width: 300px;
-            }
             
             .search-box {
                 min-width: 100%;
+            }
+            
+            .search-form {
+                flex-direction: column;
+            }
+            
+            .filter-select {
+                width: 100%;
+            }
+            
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             }
         }
         
         @media (max-width: 480px) {
             .hero-section {
-                padding: 4rem 1rem;
+                padding: 3rem 1rem;
+            }
+            
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+            
+            .section-title h2 {
+                font-size: 2rem;
             }
             
             .products-grid {
@@ -782,31 +629,6 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
                 flex-direction: column;
             }
         }
-        
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        @keyframes slideInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.5s ease;
-        }
-        
-        .slide-in-up {
-            animation: slideInUp 0.5s ease;
-        }
     </style>
 </head>
 <body>
@@ -816,10 +638,8 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
             <nav class="navbar">
                 <a href="index.php" class="logo">
                     <i class="fas fa-laptop-code"></i>
-                    <div class="logo-text">
-                        <span class="logo-main">OrderWithMe</span>
-                        <span class="logo-sub">Electronics Store</span>
-                    </div>
+                    <span>OrderWithMe</span>
+                    <span style="font-size: 0.7rem; background: #e74c3c;">Tanzania</span>
                 </a>
                 
                 <button class="mobile-menu-btn" id="mobileMenuBtn">
@@ -836,92 +656,78 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
                     </a></li>
                     
                     <?php if(isLoggedIn()): ?>
-                        <li class="user-menu">
-                            <a href="#" id="userDropdownBtn">
-                                <i class="fas fa-user-circle"></i> <?php echo htmlspecialchars($_SESSION['first_name']); ?>
-                                <i class="fas fa-chevron-down"></i>
-                            </a>
-                            <div class="user-dropdown" id="userDropdown">
-                                <a href="profile.php"><i class="fas fa-user"></i> My Profile</a>
-                                <a href="orders.php"><i class="fas fa-history"></i> My Orders</a>
-                                <?php if(isAdmin()): ?>
-                                    <a href="admin/"><i class="fas fa-cog"></i> Admin Panel</a>
-                                <?php endif; ?>
-                                <a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                            </div>
-                        </li>
+                        <li><a href="orders.php"><i class="fas fa-history"></i> Orders</a></li>
+                        <?php if(isAdmin()): ?>
+                            <li><a href="admin/"><i class="fas fa-cog"></i> Admin</a></li>
+                        <?php endif; ?>
+                        <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                     <?php else: ?>
                         <li><a href="login.php"><i class="fas fa-sign-in-alt"></i> Login</a></li>
-                        <li><a href="register.php" class="btn btn-accent"><i class="fas fa-user-plus"></i> Register</a></li>
+                        <li><a href="register.php" class="btn btn-primary"><i class="fas fa-user-plus"></i> Register</a></li>
                     <?php endif; ?>
                 </ul>
             </nav>
         </div>
     </header>
 
-    <!-- Hero Section -->
+    <!-- Hero Section - Updated for Tanzania -->
     <section class="hero-section">
         <div class="container">
-            <div class="hero-content">
-                <h1 class="hero-title">Welcome to Order With Me</h1>
-                <p class="hero-subtitle">Your trusted destination for premium electronics, gadgets, and tech accessories at unbeatable prices.</p>
-                <div class="hero-buttons">
-                    <a href="#featured" class="btn btn-primary btn-large"><i class="fas fa-shopping-bag"></i> Shop Now</a>
-                    <a href="products.php" class="btn btn-secondary btn-large"><i class="fas fa-star"></i> View Products</a>
-                </div>
+            <h1>Welcome to Order With Me Tanzania</h1>
+            <p>Your trusted destination for premium electronics in Dar es Salaam and across Tanzania.</p>
+            <div class="tz-badge">
+                <i class="fas fa-map-marker-alt"></i> Dar es Salaam, Tanzania
+            </div>
+            <div style="margin-top: 2rem;">
+                <a href="#featured" class="btn btn-primary btn-large"><i class="fas fa-shopping-bag"></i> Shop Now</a>
+                <a href="products.php" class="btn btn-secondary btn-large"><i class="fas fa-star"></i> View Products</a>
             </div>
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section class="features-section">
-        <div class="container">
-            <div class="section-title">
-                <h2>Why Choose Us</h2>
-                <p>We provide the best shopping experience for electronics</p>
+    <!-- Features -->
+    <section class="container">
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shipping-fast"></i>
+                </div>
+                <h3>Free Shipping</h3>
+                <p>Free delivery in Dar es Salaam on orders over 200,000 TZS</p>
             </div>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-shipping-fast"></i>
-                    </div>
-                    <h3>Free Shipping</h3>
-                    <p>Free delivery on all orders over $50</p>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h3>Secure Payment</h3>
-                    <p>100% secure and encrypted payments</p>
+                <h3>Secure Payment</h3>
+                <p>100% secure payments via Tigo Pesa, M-Pesa, Airtel Money</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-undo-alt"></i>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-undo-alt"></i>
-                    </div>
-                    <h3>30-Day Returns</h3>
-                    <p>Easy returns within 30 days</p>
+                <h3>7-Day Returns</h3>
+                <p>Easy returns within 7 days of delivery</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-headset"></i>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-headset"></i>
-                    </div>
-                    <h3>24/7 Support</h3>
-                    <p>Dedicated customer support team</p>
-                </div>
+                <h3>24/7 Support</h3>
+                <p>Call us anytime at 0688 213 043</p>
             </div>
         </div>
     </section>
 
     <!-- Search Section -->
-    <section class="search-section">
-        <div class="container">
+    <section class="container">
+        <div class="search-section">
             <form method="GET" action="index.php" class="search-form">
                 <div class="search-box">
                     <input type="text" 
                            name="search" 
                            class="search-input" 
-                           placeholder="Search for products, brands, categories..."
+                           placeholder="Search for phones, laptops, accessories..."
                            value="<?php echo htmlspecialchars($search_keywords); ?>"
                            autocomplete="off">
                 </div>
@@ -945,188 +751,203 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
     </section>
 
     <!-- Featured Products -->
-    <section id="featured" class="products-section">
-        <div class="container">
-            <div class="section-title">
-                <h2>Featured Products</h2>
-                <p>Discover our handpicked selection of premium electronics</p>
-            </div>
-            
-            <?php 
-            // Determine which products to display
-            $display_products = $search_results ? $search_results : $products;
-            $product_count = 0;
-            
-            if($display_products && $display_products->rowCount() > 0): 
-            ?>
-                <div class="products-grid">
-                    <?php 
-                    // Reset pointer if it's a search result
-                    if($search_results) {
-                        $display_products->execute(); // Re-execute if it's a PDOStatement
+    <section id="featured" class="container">
+        <div class="section-title">
+            <h2>Featured Products</h2>
+            <p>Discover our handpicked selection of premium electronics</p>
+        </div>
+        
+        <?php 
+        // Determine which products to display
+        $display_products = $search_results ? $search_results : $products;
+        $product_count = 0;
+        $has_products = false;
+        
+        // Check if we have products
+        if($display_products) {
+            if(method_exists($display_products, 'rowCount')) {
+                $has_products = $display_products->rowCount() > 0;
+            }
+        }
+        
+        if($has_products): 
+        ?>
+            <div class="products-grid">
+                <?php 
+                // Reset and fetch products
+                if($search_results) {
+                    $search_results->execute();
+                    $rows = $search_results->fetchAll(PDO::FETCH_ASSOC);
+                } else {
+                    $rows = $products->fetchAll(PDO::FETCH_ASSOC);
+                }
+                
+                foreach($rows as $row): 
+                    $product_count++;
+                    if($product_count > 8) break;
+                    
+                    // Determine badge
+                    $badge = '';
+                    if($row['stock_quantity'] < 5 && $row['stock_quantity'] > 0) {
+                        $badge = '<span class="product-badge">Low Stock</span>';
+                    } elseif($row['price'] < 100) {
+                        $badge = '<span class="product-badge" style="background: #f39c12;">Great Deal</span>';
+                    } elseif($row['stock_quantity'] == 0) {
+                        $badge = '<span class="product-badge" style="background: #95a5a6;">Out of Stock</span>';
                     }
                     
-                    while($row = $display_products->fetch(PDO::FETCH_ASSOC)): 
-                        $product_count++;
-                        // Limit to 8 products on homepage
-                        if($product_count > 8) break;
-                        
-                        // Determine badge based on conditions
-                        $badge = '';
-                        if($row['stock_quantity'] < 5 && $row['stock_quantity'] > 0) {
-                            $badge = '<span class="product-badge">Low Stock</span>';
-                        } elseif($row['price'] < 100) {
-                            $badge = '<span class="product-badge">Great Deal</span>';
-                        } elseif($row['stock_quantity'] == 0) {
-                            $badge = '<span class="product-badge" style="background: var(--gray);">Out of Stock</span>';
+                    // Get category display name
+                    $category_names = [
+                        'phone' => 'Smartphone',
+                        'laptop' => 'Laptop',
+                        'tablet' => 'Tablet',
+                        'accessory' => 'Accessory'
+                    ];
+                    $category_display = $category_names[$row['category']] ?? ucfirst($row['category']);
+                    
+                    // --- COMPLETE IMAGE FIX ---
+                    if(!empty($row['image_url'])) {
+                        if(filter_var($row['image_url'], FILTER_VALIDATE_URL)) {
+                            $image_url = $row['image_url'];
+                        } else {
+                            $local_path = __DIR__ . '/' . $row['image_url'];
+                            if(file_exists($local_path)) {
+                                $image_url = $row['image_url'];
+                            } else {
+                                $image_url = $fallback_images[$row['category']] ?? $fallback_images['default'];
+                            }
                         }
+                    } else {
+                        $image_url = $fallback_images[$row['category']] ?? $fallback_images['default'];
+                    }
+                ?>
+                    <div class="product-card">
+                        <?php echo $badge; ?>
                         
-                        // Get category display name
-                        $category_names = [
-                            'phone' => 'Smartphone',
-                            'laptop' => 'Laptop',
-                            'tablet' => 'Tablet',
-                            'accessory' => 'Accessory',
-                            'other' => 'Other'
-                        ];
-                        $category_display = isset($category_names[$row['category']]) ? $category_names[$row['category']] : ucfirst($row['category']);
+                        <div class="product-image">
+                            <img src="<?php echo $image_url; ?>" 
+                                 alt="<?php echo htmlspecialchars($row['name']); ?>"
+                                 loading="lazy"
+                                 onerror="this.onerror=null; this.src='<?php echo $fallback_images['default']; ?>';">
+                        </div>
                         
-                        // Use default image if none provided
-                        $image_url = !empty($row['image_url']) ? $row['image_url'] : 'https://images.unsplash.com/photo-1498049794561-7780e7231661?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
-                    ?>
-                        <div class="product-card" 
-                             data-category="<?php echo $row['category']; ?>"
-                             data-price="<?php echo $row['price']; ?>"
-                             data-name="<?php echo htmlspecialchars(strtolower($row['name'])); ?>">
+                        <div class="product-info">
+                            <div class="product-category"><?php echo $category_display; ?></div>
                             
-                            <?php echo $badge; ?>
+                            <h3 class="product-title">
+                                <a href="product.php?id=<?php echo $row['product_id']; ?>">
+                                    <?php echo htmlspecialchars($row['name']); ?>
+                                </a>
+                            </h3>
                             
-                            <div class="product-image">
-                                <img src="<?php echo $image_url; ?>" 
-                                     alt="<?php echo htmlspecialchars($row['name']); ?>"
-                                     loading="lazy">
+                            <p class="product-description">
+                                <?php echo htmlspecialchars(substr($row['description'], 0, 80)); ?>
+                                <?php if(strlen($row['description']) > 80): ?>...<?php endif; ?>
+                            </p>
+                            
+                            <div class="product-price">
+                                TZS <?php echo number_format($row['price'] * 2500, 0); ?> /-
                             </div>
                             
-                            <div class="product-info">
-                                <div class="product-category"><?php echo $category_display; ?></div>
+                            <div class="product-stock">
+                                <?php if($row['stock_quantity'] > 0): ?>
+                                    <span class="in-stock">
+                                        <i class="fas fa-check-circle"></i> 
+                                        <?php echo $row['stock_quantity']; ?> in stock
+                                    </span>
+                                <?php else: ?>
+                                    <span class="out-of-stock">
+                                        <i class="fas fa-times-circle"></i> Out of stock
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+                            
+                            <div class="product-actions">
+                                <?php if($row['stock_quantity'] > 0): ?>
+                                    <button class="btn btn-primary add-to-cart-btn"
+                                            data-product-id="<?php echo $row['product_id']; ?>"
+                                            data-product-name="<?php echo htmlspecialchars($row['name']); ?>"
+                                            data-product-price="<?php echo $row['price'] * 2500; ?>"
+                                            data-product-image="<?php echo $image_url; ?>">
+                                        <i class="fas fa-cart-plus"></i> Add to Cart
+                                    </button>
+                                <?php else: ?>
+                                    <button class="btn btn-secondary" disabled>
+                                        <i class="fas fa-cart-plus"></i> Out of Stock
+                                    </button>
+                                <?php endif; ?>
                                 
-                                <h3 class="product-title">
-                                    <a href="product.php?id=<?php echo $row['product_id']; ?>">
-                                        <?php echo htmlspecialchars($row['name']); ?>
-                                    </a>
-                                </h3>
-                                
-                                <p class="product-description">
-                                    <?php echo htmlspecialchars(substr($row['description'], 0, 80)); ?>
-                                    <?php if(strlen($row['description']) > 80): ?>...<?php endif; ?>
-                                </p>
-                                
-                                <div class="product-price">
-                                    $<?php echo number_format($row['price'], 2); ?>
-                                </div>
-                                
-                                <div class="product-stock">
-                                    <?php if($row['stock_quantity'] > 0): ?>
-                                        <span class="in-stock">
-                                            <i class="fas fa-check-circle"></i> 
-                                            <?php echo $row['stock_quantity']; ?> in stock
-                                        </span>
-                                    <?php else: ?>
-                                        <span class="out-of-stock">
-                                            <i class="fas fa-times-circle"></i> Out of stock
-                                        </span>
-                                    <?php endif; ?>
-                                </div>
-                                
-                                <div class="product-actions">
-                                    <?php if($row['stock_quantity'] > 0): ?>
-                                        <button class="btn btn-primary add-to-cart-btn"
-                                                data-product-id="<?php echo $row['product_id']; ?>"
-                                                data-product-name="<?php echo htmlspecialchars($row['name']); ?>"
-                                                data-product-price="<?php echo $row['price']; ?>"
-                                                data-product-image="<?php echo $image_url; ?>">
-                                            <i class="fas fa-cart-plus"></i> Add to Cart
-                                        </button>
-                                    <?php else: ?>
-                                        <button class="btn btn-secondary" disabled>
-                                            <i class="fas fa-cart-plus"></i> Out of Stock
-                                        </button>
-                                    <?php endif; ?>
-                                    
-                                    <a href="product.php?id=<?php echo $row['product_id']; ?>" 
-                                       class="btn btn-success">
-                                        <i class="fas fa-eye"></i> View
-                                    </a>
-                                </div>
+                                <a href="product.php?id=<?php echo $row['product_id']; ?>" 
+                                   class="btn btn-success">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
                             </div>
                         </div>
-                    <?php endwhile; ?>
-                </div>
-                
-                <?php if($product_count > 0): ?>
-                    <div style="text-align: center; margin-top: 3rem;">
-                        <a href="products.php" class="btn btn-primary btn-large">
-                            <i class="fas fa-arrow-right"></i> View All Products
-                        </a>
                     </div>
-                <?php endif; ?>
-                
-            <?php else: ?>
-                <div class="no-products">
-                    <i class="fas fa-search"></i>
-                    <h3>No products found</h3>
-                    <p><?php echo $search_keywords ? 'No products match your search criteria.' : 'No products available at the moment.'; ?></p>
-                    <?php if($search_keywords): ?>
-                        <a href="index.php" class="btn btn-primary" style="margin-top: 1rem;">
-                            <i class="fas fa-home"></i> Clear Search
-                        </a>
-                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+            
+            <?php if($product_count > 0): ?>
+                <div style="text-align: center; margin-top: 3rem;">
+                    <a href="products.php" class="btn btn-primary btn-large">
+                        <i class="fas fa-arrow-right"></i> View All Products
+                    </a>
                 </div>
             <?php endif; ?>
-        </div>
+            
+        <?php else: ?>
+            <div class="no-products">
+                <i class="fas fa-search"></i>
+                <h3>No products found</h3>
+                <p><?php echo $search_keywords ? 'No products match your search criteria.' : 'No products available at the moment.'; ?></p>
+                <?php if($search_keywords): ?>
+                    <a href="index.php" class="btn btn-primary" style="margin-top: 1rem;">
+                        <i class="fas fa-home"></i> Clear Search
+                    </a>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
     </section>
 
     <!-- Categories Section -->
-    <section class="categories-section">
-        <div class="container">
-            <div class="section-title">
-                <h2>Shop by Category</h2>
-                <p>Browse our wide range of electronic categories</p>
-            </div>
+    <section class="container">
+        <div class="section-title">
+            <h2>Shop by Category</h2>
+            <p>Browse our wide range of electronic categories</p>
+        </div>
+        
+        <div class="categories-grid">
+            <a href="categories.php?category=phone" class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h3>Smartphones</h3>
+                <p>Latest models from Apple, Samsung, Tecno, Infinix</p>
+            </a>
             
-            <div class="categories-grid">
-                <a href="products.php?category=phone" class="category-card">
-                    <div class="category-icon">
-                        <i class="fas fa-mobile-alt"></i>
-                    </div>
-                    <h3>Smartphones</h3>
-                    <p>Latest models & accessories</p>
-                </a>
-                
-                <a href="products.php?category=laptop" class="category-card">
-                    <div class="category-icon">
-                        <i class="fas fa-laptop"></i>
-                    </div>
-                    <h3>Laptops</h3>
-                    <p>Powerful computing devices</p>
-                </a>
-                
-                <a href="products.php?category=tablet" class="category-card">
-                    <div class="category-icon">
-                        <i class="fas fa-tablet-alt"></i>
-                    </div>
-                    <h3>Tablets</h3>
-                    <p>Portable entertainment</p>
-                </a>
-                
-                <a href="products.php?category=accessory" class="category-card">
-                    <div class="category-icon">
-                        <i class="fas fa-headphones"></i>
-                    </div>
-                    <h3>Accessories</h3>
-                    <p>Gadgets & accessories</p>
-                </a>
-            </div>
+            <a href="categories.php?category=laptop" class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-laptop"></i>
+                </div>
+                <h3>Laptops</h3>
+                <p>Dell, HP, Lenovo, Apple MacBook</p>
+            </a>
+            
+            <a href="categories.php?category=tablet" class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-tablet-alt"></i>
+                </div>
+                <h3>Tablets</h3>
+                <p>iPad, Samsung Tab, Huawei</p>
+            </a>
+            
+            <a href="categories.php?category=accessory" class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-headphones"></i>
+                </div>
+                <h3>Accessories</h3>
+                <p>Headphones, chargers, cases, cables</p>
+            </a>
         </div>
     </section>
 
@@ -1134,15 +955,15 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
     <section class="cta-section">
         <div class="container">
             <div class="cta-content">
-                <h2>Ready to Upgrade Your Tech?</h2>
-                <p>Join thousands of satisfied customers who trust us for their electronic needs. Sign up today and get 10% off your first order!</p>
+                <h2>Karibu Tanzania!</h2>
+                <p>Join thousands of satisfied customers across Dar es Salaam, Arusha, Mwanza, and all regions of Tanzania. Get 10% off your first order!</p>
                 
                 <?php if(!isLoggedIn()): ?>
-                    <a href="register.php" class="btn btn-accent btn-large">
-                        <i class="fas fa-gift"></i> Get 10% Off Now
+                    <a href="register.php" class="btn btn-primary btn-large">
+                        <i class="fas fa-gift"></i> Jisajili Sasa
                     </a>
                 <?php else: ?>
-                    <a href="products.php" class="btn btn-accent btn-large">
+                    <a href="products.php" class="btn btn-primary btn-large">
                         <i class="fas fa-shopping-bag"></i> Continue Shopping
                     </a>
                 <?php endif; ?>
@@ -1150,18 +971,21 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
         </div>
     </section>
 
-    <!-- Footer -->
+    <!-- Footer - Updated with Tanzania location and phone -->
     <footer class="main-footer">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3>Order With Me</h3>
-                    <p>Your trusted electronics store offering premium products with exceptional customer service since 2024.</p>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <h3>Order With Me Tanzania</h3>
+                    <p>Your trusted electronics store in Dar es Salaam, offering premium products with exceptional customer service since 2024.</p>
+                    <div class="tz-flag">
+                        <i class="fas fa-map-marker-alt"></i> Dar es Salaam, Tanzania
+                    </div>
+                    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                        <a href="#" style="color: white; font-size: 1.5rem;"><i class="fab fa-facebook"></i></a>
+                        <a href="#" style="color: white; font-size: 1.5rem;"><i class="fab fa-instagram"></i></a>
+                        <a href="#" style="color: white; font-size: 1.5rem;"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" style="color: white; font-size: 1.5rem;"><i class="fab fa-twitter"></i></a>
                     </div>
                 </div>
                 
@@ -1170,9 +994,9 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
                     <ul>
                         <li><a href="index.php">Home</a></li>
                         <li><a href="products.php">Products</a></li>
+                        <li><a href="categories.php">Categories</a></li>
                         <li><a href="about.php">About Us</a></li>
                         <li><a href="contact.php">Contact</a></li>
-                        <li><a href="faq.php">FAQ</a></li>
                     </ul>
                 </div>
                 
@@ -1188,36 +1012,43 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
                 
                 <div class="footer-section">
                     <h3>Contact Info</h3>
-                    <ul class="contact-info">
-                        <li>
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>123 Tech Street, Digital City</span>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 0.8rem; display: flex; align-items: center;">
+                            <i class="fas fa-map-marker-alt" style="color: #3498db; margin-right: 0.8rem; width: 20px;"></i>
+                            <span>Samora Avenue, Dar es Salaam, Tanzania</span>
                         </li>
-                        <li>
-                            <i class="fas fa-phone"></i>
-                            <span>(555) 123-4567</span>
+                        <li style="margin-bottom: 0.8rem; display: flex; align-items: center;">
+                            <i class="fas fa-phone" style="color: #3498db; margin-right: 0.8rem; width: 20px;"></i>
+                            <span>0688 213 043</span>
                         </li>
-                        <li>
-                            <i class="fas fa-envelope"></i>
-                            <span>support@orderwithme.com</span>
+                        <li style="margin-bottom: 0.8rem; display: flex; align-items: center;">
+                            <i class="fas fa-mobile-alt" style="color: #3498db; margin-right: 0.8rem; width: 20px;"></i>
+                            <span>0788 213 043 (WhatsApp)</span>
                         </li>
-                        <li>
-                            <i class="fas fa-clock"></i>
-                            <span>Mon-Fri: 9AM-6PM</span>
+                        <li style="margin-bottom: 0.8rem; display: flex; align-items: center;">
+                            <i class="fas fa-envelope" style="color: #3498db; margin-right: 0.8rem; width: 20px;"></i>
+                            <span>info@orderwithme.co.tz</span>
+                        </li>
+                        <li style="margin-bottom: 0.8rem; display: flex; align-items: center;">
+                            <i class="fas fa-clock" style="color: #3498db; margin-right: 0.8rem; width: 20px;"></i>
+                            <span>Mon-Sat: 9AM - 7PM, Sun: 10AM - 4PM</span>
                         </li>
                     </ul>
                 </div>
             </div>
             
             <div class="footer-bottom">
-                <p>&copy; <?php echo date('Y'); ?> Order With Me. All rights reserved. | Designed for Academic Purposes</p>
+                <p>&copy; <?php echo date('Y'); ?> Order With Me Tanzania. All rights reserved. | Designed for Academic Purposes</p>
+                <p style="margin-top: 0.5rem; font-size: 0.8rem;">
+                    <i class="fas fa-map-pin"></i> Dar es Salaam | <i class="fas fa-phone"></i> 0688 213 043 | <i class="fas fa-wifi"></i> Serving All Tanzania
+                </p>
             </div>
         </div>
     </footer>
 
     <!-- JavaScript -->
     <script>
-        // Cart Management System
+        // Cart Manager Class
         class CartManager {
             constructor() {
                 this.cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -1241,15 +1072,16 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
                 
                 this.saveCart();
                 this.updateCartCount();
-                this.showNotification('Added to cart!', 'success');
+                this.showNotification('Imeongezwa kwenye cart!', 'success');
                 return this.cart;
             }
             
             removeFromCart(productId) {
+                const item = this.cart.find(item => item.id == productId);
                 this.cart = this.cart.filter(item => item.id != productId);
                 this.saveCart();
                 this.updateCartCount();
-                this.showNotification('Removed from cart', 'info');
+                this.showNotification('Imeondolewa kwenye cart', 'info');
                 return this.cart;
             }
             
@@ -1280,10 +1112,12 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
                 this.cart = [];
                 this.saveCart();
                 this.updateCartCount();
+                this.showNotification('Cart imefutwa', 'info');
             }
             
             saveCart() {
                 localStorage.setItem('cart', JSON.stringify(this.cart));
+                this.updateCartCount();
             }
             
             updateCartCount() {
@@ -1296,13 +1130,11 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
             }
             
             showNotification(message, type = 'success') {
-                // Remove existing notifications
                 const existing = document.querySelector('.cart-notification');
                 if (existing) existing.remove();
                 
-                // Create notification
                 const notification = document.createElement('div');
-                notification.className = `cart-notification cart-notification-${type}`;
+                notification.className = 'cart-notification';
                 notification.innerHTML = `
                     <div class="notification-content">
                         <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
@@ -1310,7 +1142,6 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
                     </div>
                 `;
                 
-                // Style notification
                 notification.style.cssText = `
                     position: fixed;
                     top: 20px;
@@ -1327,7 +1158,6 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
                 
                 document.body.appendChild(notification);
                 
-                // Remove after 3 seconds
                 setTimeout(() => {
                     notification.style.animation = 'slideOutRight 0.3s ease';
                     setTimeout(() => notification.remove(), 300);
@@ -1337,7 +1167,6 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
         
         // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize cart manager
             const cartManager = new CartManager();
             window.cartManager = cartManager;
             
@@ -1354,30 +1183,10 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
                         : '<i class="fas fa-bars"></i>';
                 });
                 
-                // Close menu when clicking outside
                 document.addEventListener('click', function(e) {
                     if (!navMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
                         navMenu.classList.remove('show');
                         mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
-                    }
-                });
-            }
-            
-            // User dropdown
-            const userDropdownBtn = document.getElementById('userDropdownBtn');
-            const userDropdown = document.getElementById('userDropdown');
-            
-            if (userDropdownBtn && userDropdown) {
-                userDropdownBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    userDropdown.classList.toggle('show');
-                });
-                
-                // Close dropdown when clicking outside
-                document.addEventListener('click', function() {
-                    if (userDropdown && userDropdown.classList.contains('show')) {
-                        userDropdown.classList.remove('show');
                     }
                 });
             }
@@ -1395,12 +1204,10 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
                     const productPrice = button.dataset.productPrice;
                     const productImage = button.dataset.productImage;
                     
-                    // Add to cart
                     cartManager.addToCart(productId, productName, productPrice, productImage);
                     
-                    // Visual feedback on button
                     const originalHTML = button.innerHTML;
-                    button.innerHTML = '<i class="fas fa-check"></i> Added!';
+                    button.innerHTML = '<i class="fas fa-check"></i> Imeongezwa!';
                     button.style.background = '#2ecc71';
                     button.disabled = true;
                     
@@ -1412,40 +1219,12 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
                 }
             });
             
-            // Search functionality
-            const searchInput = document.querySelector('.search-input');
-            if (searchInput) {
-                let searchTimeout;
-                
-                searchInput.addEventListener('input', function() {
-                    clearTimeout(searchTimeout);
-                    
-                    if (this.value.trim().length >= 2) {
-                        searchTimeout = setTimeout(() => {
-                            filterProducts(this.value.trim());
-                        }, 500);
-                    } else if (this.value.trim() === '') {
-                        filterProducts('');
-                    }
-                });
-            }
-            
-            // Category filter
-            const categoryFilter = document.querySelector('select[name="category"]');
-            if (categoryFilter) {
-                categoryFilter.addEventListener('change', function() {
-                    filterProductsByCategory(this.value);
-                });
-            }
-            
-            // Smooth scrolling for anchor links
+            // Smooth scrolling
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function(e) {
                     e.preventDefault();
-                    
                     const targetId = this.getAttribute('href');
                     if (targetId === '#') return;
-                    
                     const targetElement = document.querySelector(targetId);
                     if (targetElement) {
                         window.scrollTo({
@@ -1455,131 +1234,26 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
                     }
                 });
             });
-            
-            // Initialize animations
-            initAnimations();
         });
         
-        // Filter products by search term
-        function filterProducts(searchTerm) {
-            const productCards = document.querySelectorAll('.product-card');
-            const searchTermLower = searchTerm.toLowerCase();
-            
-            productCards.forEach(card => {
-                const productName = card.querySelector('.product-title').textContent.toLowerCase();
-                const productDesc = card.querySelector('.product-description').textContent.toLowerCase();
-                const productCategory = card.dataset.category;
-                
-                const matchesSearch = searchTerm === '' || 
-                    productName.includes(searchTermLower) || 
-                    productDesc.includes(searchTermLower);
-                
-                card.style.display = matchesSearch ? 'block' : 'none';
-                
-                // Add highlight effect for matches
-                if (matchesSearch && searchTerm !== '') {
-                    card.classList.add('search-match');
-                    card.style.animation = 'pulse 1s';
-                    setTimeout(() => {
-                        card.style.animation = '';
-                    }, 1000);
-                } else {
-                    card.classList.remove('search-match');
-                }
-            });
-        }
-        
-        // Filter products by category
-        function filterProductsByCategory(category) {
-            const productCards = document.querySelectorAll('.product-card');
-            
-            productCards.forEach(card => {
-                const productCategory = card.dataset.category;
-                
-                if (category === '' || productCategory === category) {
-                    card.style.display = 'block';
-                    card.classList.add('category-match');
-                } else {
-                    card.style.display = 'none';
-                    card.classList.remove('category-match');
-                }
-            });
-        }
-        
-        // Initialize animations
-        function initAnimations() {
-            // Add animation styles
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes slideInRight {
-                    from {
-                        transform: translateX(100%);
-                        opacity: 0;
-                    }
-                    to {
-                        transform: translateX(0);
-                        opacity: 1;
-                    }
-                }
-                
-                @keyframes slideOutRight {
-                    from {
-                        transform: translateX(0);
-                        opacity: 1;
-                    }
-                    to {
-                        transform: translateX(100%);
-                        opacity: 0;
-                    }
-                }
-                
-                @keyframes pulse {
-                    0% {
-                        box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7);
-                    }
-                    70% {
-                        box-shadow: 0 0 0 10px rgba(52, 152, 219, 0);
-                    }
-                    100% {
-                        box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
-                    }
-                }
-                
-                .search-match {
-                    border: 2px solid #3498db;
-                }
-                
-                .category-match {
-                    border: 2px solid #2ecc71;
-                }
-                
-                .notification-content {
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                }
-                
-                .notification-content i {
-                    font-size: 1.2rem;
-                }
-            `;
-            document.head.appendChild(style);
-            
-            // Add fade-in animation to elements
-            const elementsToAnimate = document.querySelectorAll('.feature-card, .product-card, .category-card');
-            elementsToAnimate.forEach((el, index) => {
-                el.style.animationDelay = `${index * 0.1}s`;
-                el.classList.add('fade-in');
-            });
-        }
-        
-        // Handle page refresh to maintain cart
-        window.addEventListener('beforeunload', function() {
-            // Save cart state
-            if (window.cartManager) {
-                window.cartManager.saveCart();
+        // Add animation styles
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
             }
-        });
+            @keyframes slideOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+            .notification-content {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
